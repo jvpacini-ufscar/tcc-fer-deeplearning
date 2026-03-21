@@ -1,0 +1,12 @@
+# Ignorar o ambiente virtual e variáveis locais
+venv/
+.env
+
+# Ignorar o dataset (dados pesados que devem ficar apenas na sua máquina)
+fer2013/
+*.zip
+*.csv
+
+# Ignorar arquivos temporários do Jupyter Notebook e do Python
+.ipynb_checkpoints/
+__pycache__/
