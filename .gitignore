@@ -6,6 +6,7 @@ venv/
 fer2013/
 *.zip
 *.csv
+*.png
 
 # Ignorar arquivos temporários do Jupyter Notebook e do Python
 .ipynb_checkpoints/
