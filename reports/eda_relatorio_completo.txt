@@ -1,0 +1,78 @@
+================================================================================
+RELATORIO EXPLORATÓRIO - FER2013 DATASET
+================================================================================
+
+1. RESUMO EXECUTIVO
+--------------------------------------------------------------------------------
+O dataset FER2013 eh composto por 35.887 imagens em escala de cinza (48x48 pixels)
+divididas em 7 classes de emocoes e distribuidas em splits de treinamento (28709)
+e validacao (7178).
+
+2. DISTRIBUICAO DE CLASSES
+--------------------------------------------------------------------------------
+
+TRAIN SET:
+  ANGRY       :  3995 imagens (13.92%)
+  DISGUST     :   436 imagens ( 1.52%)
+  FEAR        :  4097 imagens (14.27%)
+  HAPPY       :  7215 imagens (25.13%)
+  NEUTRAL     :  4965 imagens (17.29%)
+  SAD         :  4830 imagens (16.82%)
+  SURPRISE    :  3171 imagens (11.05%)
+
+TEST SET:
+  ANGRY       :   958 imagens (13.35%)
+  DISGUST     :   111 imagens ( 1.55%)
+  FEAR        :  1024 imagens (14.27%)
+  HAPPY       :  1774 imagens (24.71%)
+  NEUTRAL     :  1233 imagens (17.18%)
+  SAD         :  1247 imagens (17.37%)
+  SURPRISE    :   831 imagens (11.58%)
+
+3. DESAFIOS IDENTIFICADOS
+--------------------------------------------------------------------------------
+
+3.1 DESBALANCEAMENTO DE CLASSES (CRITICO)
+  * Ratio maximo/minimo: 16.55x
+  * Classe super-representada: HAPPY (7215 imagens)
+  * Classe sub-representada: DISGUST (436 imagens)
+  
+  Implicacao: Modelos treinados ingenuamente favorecero classes maiores.
+  Mitigacao: Usar class_weight='balanced' ou oversampling.
+
+3.2 VARIACAO DE QUALIDADE
+  * Imagens capturadas in-the-wild (condicoes reais)
+  * Variacoes de iluminacao, pose, ocluses
+  
+  Mitigacao: Data augmentation agressivo durante treinamento.
+
+3.3 TAMANHO PEQUENO
+  * Resolucao: 48x48 pixels (grayscale)
+  
+  Mitigacao: Transfer learning com models pre-treinados.
+
+4. RECOMENDACOES PARA MODELAGEM
+--------------------------------------------------------------------------------
+
+1. DATA AUGMENTATION
+   - Rotacao +/-20°
+   - Shifts +/-20%
+   - Zoom 80-120%
+   - Brightness +/-20%
+
+2. BALANCEAMENTO
+   - Usar class_weight='balanced'
+   - Monitorar F1-score (nao apenas acuracia)
+
+3. TRANSFER LEARNING
+   - ResNet50V2 ou EfficientNetB0
+   - Fine-tuning em 2 fases
+
+4. VALIDACAO
+   - Monitorar F1-score por classe
+   - Analisar confusion matrix
+   - Verificar leakage
+
+================================================================================
+Fim do Relatorio
+================================================================================
