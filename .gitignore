@@ -1,14 +1,38 @@
-# Ignorar o ambiente virtual e variáveis locais
+# Environments
 venv/
 .env
+.venv/
 
-# Ignorar o dataset (dados pesados que devem ficar apenas na sua máquina)
-fer2013/
-*.zip
-*.csv
+# Data
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Models & Checkpoints
+models/*
+!models/.gitkeep
 *.keras
 *.h5
+*.pt
+*.pth
+*.pkl
 
-# Ignorar arquivos temporários do Jupyter Notebook e do Python
+# Notebooks and Python
 .ipynb_checkpoints/
 __pycache__/
+*.pyc
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other datasets
+fer2013/
+raf-db/
+affectnet/
+ck+/
+*.zip
+*.csv

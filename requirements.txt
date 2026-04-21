@@ -1,0 +1,14 @@
+jupyterlab
+notebook
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+tensorflow
+keras
+torch
+torchvision
+torchaudio
+opencv-python
+tqdm

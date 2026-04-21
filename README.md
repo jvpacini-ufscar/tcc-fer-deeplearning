@@ -1,60 +1,59 @@
-# Reconhecimento de Expressões Faciais (FER) com Deep Learning
+# Reconhecimento de Emoções Humanas Usando Inteligência Artificial
 
-![Status: Em Desenvolvimento](https://img.shields.io/badge/Status-Em_Desenvolvimento-blue)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-2.10-FF6F00?logo=tensorflow)
-![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python)
+Este repositório contém o código, os experimentos e a base de desenvolvimento para o meu Trabalho de Conclusão de Curso (TCC) em Engenharia de Computação (UFSCar). O projeto tem como foco a análise comparativa de diferentes arquiteturas de redes neurais profundas aplicadas ao Reconhecimento de Expressões Faciais (FER).
 
-Este repositório contém o código-fonte e os experimentos metodológicos do Trabalho de Conclusão de Curso (TCC) em Ciência da Computação desenvolvido na Universidade Federal de São Carlos (UFSCar).
+## 🗂️ Estrutura do Projeto
 
-**Autor:** João Victor Pacini  
-**Orientador:** Prof. Dr. Alexandre Luís Magalhães Levada  
+O repositório foi organizado utilizando as melhores práticas para projetos de Data Science e Machine Learning (Cookiecutter Data Science pattern), garantindo fácil expansão para novos modelos (RNNs, LSTMs, 3D CNNs) e datasets (RAF-DB, AffectNet, CK+).
 
----
+```
+tcc-fer-deeplearning/
+├── README.md                   <- Este documento.
+├── .gitignore                  <- Arquivos e pastas a serem ignorados pelo git (ex: datasets pesados, modelos treinados).
+├── requirements.txt            <- Dependências do projeto para reprodução do ambiente.
+├── data/                       <- Pasta para armazenamento local de dados (NÃO commitada no Git).
+│   ├── raw/                    <- Dados originais (ex: pastas fer2013, raf-db).
+│   ├── interim/                <- Dados intermediários.
+│   └── processed/              <- Dados processados prontos para modelagem.
+├── models/                     <- Modelos treinados (.keras, .h5, .pt) e pesos. (NÃO commitados)
+├── notebooks/                  <- Jupyter Notebooks focados e numerados.
+│   ├── 01_exploracao_de_dados/ <- EDA (Análise Exploratória) dos datasets.
+│   ├── 02_pre_processamento/   <- Preparação de imagens, data augmentation, etc.
+│   ├── 03_modelagem_cnn/       <- Experimentos e treinos de arquiteturas estáticas (VGG, ResNet, Custom).
+│   ├── 04_modelagem_temporal/  <- Experimentos com sequências de vídeo (RNNs, LSTMs).
+│   ├── 05_modelagem_hibrida/   <- Experimentos com abordagens multimodais/atenção.
+│   └── 06_analise_e_comparacao/<- Geração de gráficos, tabelas e avaliação de métricas.
+├── reports/                    <- Arquivos gerados para o TCC (ex: CSV de histórico). (Alguns versionados)
+│   └── figures/                <- Gráficos, matrizes de confusão e plots para a monografia.
+└── src/                        <- Código fonte reutilizável em Python (.py).
+    ├── data/                   <- Scripts de extração e transformação.
+    ├── models/                 <- Scripts com definição de arquiteturas.
+    ├── train/                  <- Rotinas de treinamento.
+    ├── evaluate/               <- Scripts de validação e testes.
+    └── utils/                  <- Funções utilitárias diversas.
+```
 
-## Escopo do Projeto
-O objetivo desta pesquisa é investigar, implementar e comparar arquiteturas de Redes Neurais Convolucionais (CNNs) estáticas para a classificação de microexpressões humanas utilizando o dataset **FER2013** (*In-the-wild*). O trabalho explora os desafios crônicos de bases de dados reais, como ruído severo e desbalanceamento extremo de classes, propondo mitigações através de *Data Augmentation*, pesos matemáticos e *Transfer Learning*.
+## 🚀 Como Executar
 
-## Análise Exploratória (EDA) e Desafios
-A análise inicial do FER2013 revelou uma forte discrepância na distribuição das amostras, ditando o rumo dos experimentos de mitigação de viés:
-* **Classe Majoritária:** *Happy* (Alegria) representa ~25% do dataset.
-* **Classe Minoritária:** *Disgust* (Nojo) representa apenas ~1.5% do dataset.
-
-<div align="center">
-  <img src="distribuicao_classes_fer2013.png" alt="Distribuição de Classes" width="600"/>
-</div>
-
----
-
-## Metodologia e Experimentos Realizados
-
-O pipeline de pesquisa foi estruturado em testes progressivos, visando não apenas a máxima acurácia, mas a compreensão de *como* a rede aprende e falha.
-
-### 1. Baselines e Avaliação de Transfer Learning
-* **CNN Customizada (Baseline Absoluto):** Arquitetura leve construída do zero. Alcançou **~54%** de acurácia de validação, mas apresentou *overfitting* de memorização.
-* **VGG16 & ResNet50 (Transfer Learning Rígido):** Aplicação de pesos do *ImageNet* com base congelada. Modelos estagnaram na faixa de **40-42%**, indicando que características espaciais generalistas não se traduzem bem para imagens *grayscale* de 48x48 sem reajuste fino.
-
-### 2. Estratégias de Mitigação de Viés (Combate ao Desbalanceamento)
-Para lidar com a cegueira da rede para as classes minoritárias ("Nojo" e "Medo"), as seguintes abordagens foram testadas sobre a arquitetura Baseline:
-* **Class Weights Matemáticos:** Penalização severa para erros nas minorias. Resultou em *overfitting* destrutivo (91% Treino / 46% Teste), com a rede decorando os pixels das raras imagens.
-* **SMOTE (Synthetic Minority Over-sampling):** Tentativa de interpolação matemática de pixels. Gerou ruído visual ("imagens fantasmas") que invalidou o aprendizado.
-* **Sinergia (Data Augmentation + Class Weights):** A introdução de variações geométricas dinâmicas combinada com penalidades matemáticas estabilizou o aprendizado. A rede encerrou com **~48%** de acurácia real, eliminando totalmente a curva de divergência de *overfitting*.
-
----
-
-## Próximos Passos
-* Implementar um script robusto de visualização cruzada de métricas (Curvas de Aprendizado e *Loss*).
-* Explorar o *Fine-Tuning* profundo em redes densas (ex: MobileNet ou EfficientNet).
-* Investigar arquiteturas temporais (RNNs/LSTMs) em vídeos para captura de dinâmica facial.
-
----
-
-## Como Reproduzir os Experimentos
-
-Todos os testes foram isolados em *Jupyter Notebooks* independentes para garantir clareza e controle de variáveis.
-
-1. Clone o repositório.
-2. Instale as dependências garantindo compatibilidade com aceleração GPU no Windows:
+1. Crie um ambiente virtual e instale as dependências:
 ```bash
-pip install tensorflow==2.10
-pip install "numpy<2.0" "pandas<2.0"
-pip install matplotlib seaborn scikit-learn
+python -m venv venv
+source venv/bin/activate  # ou venv\Scripts\activate no Windows
+pip install -r requirements.txt
+```
+
+2. Baixe os datasets e extraia na pasta correspondente em `data/raw/` (ex: `data/raw/fer2013/train`).
+
+3. Utilize os notebooks dentro da pasta `notebooks/` para rodar as etapas de exploração, treinamento e análise, na ordem em que foram numerados.
+
+## 📅 Contexto (TCC 1 e TCC 2)
+
+A fundamentação teórica, revisão sistemática da literatura e caracterização dos datasets foram estruturadas durante o TCC 1. Os esforços na fase atual (TCC 2) focam em:
+* Implementar e comparar arquiteturas espaciais estáticas (CNNs, VGG16, ResNet50, EfficientNet).
+* Implementar modelos de captura de características temporais (RNN/LSTM/CNNs 3D) para vídeos.
+* Avaliar criticamente métricas de desempenho e resiliência a oclusões e viés de classe.
+
+---
+**Autor**: João Victor Pacini (RA 769729)  
+**Orientador**: Prof. Alexandre Luís Magalhaes Levada  
+**Instituição**: Universidade Federal de São Carlos (UFSCar)
