@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix
 
-def save_classification_report(y_true, y_pred, classes, model_name, output_dir="../../reports"):
+def save_classification_report(y_true, y_pred, classes, model_name, output_dir=os.path.join(os.path.dirname(__file__), "..", "..", "reports")):
     """
     Gera e salva o classification report (Precision, Recall, F1-Score) em formato CSV.
     """
@@ -25,7 +25,7 @@ def save_classification_report(y_true, y_pred, classes, model_name, output_dir="
     
     return df_report
 
-def plot_and_save_confusion_matrix(y_true, y_pred, classes, model_name, output_dir="../../reports/figures"):
+def plot_and_save_confusion_matrix(y_true, y_pred, classes, model_name, output_dir=os.path.join(os.path.dirname(__file__), "..", "..", "reports", "figures")):
     """
     Gera, exibe e salva a Matriz de Confusão normalizada.
     """
