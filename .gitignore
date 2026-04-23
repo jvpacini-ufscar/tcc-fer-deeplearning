@@ -35,4 +35,10 @@ raf-db/
 affectnet/
 ck+/
 *.zip
+# Ignora CSVs de datasets, mas permite os de relatórios
 *.csv
+!reports/*.csv
+!reports/**/*.csv
+
+# Local AI References
+docs/referencias/

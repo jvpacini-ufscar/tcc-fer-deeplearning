@@ -56,11 +56,10 @@ def create_data_generators():
         zoom_range=0.2,
         horizontal_flip=True,
         brightness_range=[0.8, 1.2],
-        fill_mode='nearest',
-        rescale=1./255
+        fill_mode='nearest'
     )
     
-    val_datagen = ImageDataGenerator(rescale=1./255)
+    val_datagen = ImageDataGenerator()
     
     train_gen = train_datagen.flow_from_directory(
         TRAIN_DIR,
@@ -91,7 +90,8 @@ def get_class_weights(train_gen):
         classes=np.unique(classes),
         y=classes
     )
-    return dict(enumerate(class_weights))
+    # Converter para float para evitar erros de serialização JSON no Keras
+    return {int(i): float(w) for i, w in enumerate(class_weights)}
 
 
 def build_resnet50v2():
@@ -150,8 +150,9 @@ def train_model_two_phase(model, base_model, train_gen, val_gen, c_weights,
         EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=0),
         ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=1e-5, verbose=0),
         ModelCheckpoint(
-            os.path.join(MODELS_DIR, f'{model_name}_f1.keras'),
+            os.path.join(MODELS_DIR, f'{model_name}_f1.weights.h5'),
             save_best_only=True,
+            save_weights_only=True,
             verbose=0
         )
     ]
@@ -182,8 +183,9 @@ def train_model_two_phase(model, base_model, train_gen, val_gen, c_weights,
         EarlyStopping(monitor='val_loss', patience=7, restore_best_weights=True, verbose=0),
         ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=1e-7, verbose=0),
         ModelCheckpoint(
-            os.path.join(MODELS_DIR, f'{model_name}_f2.keras'),
+            os.path.join(MODELS_DIR, f'{model_name}_f2.weights.h5'),
             save_best_only=True,
+            save_weights_only=True,
             verbose=0
         )
     ]
