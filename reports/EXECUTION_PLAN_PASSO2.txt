@@ -1,0 +1,242 @@
+================================================================================
+PLANO DE EXECUCAO ESTRUTURADO - PASSO 2: TRANSFER LEARNING
+================================================================================
+
+OBJETIVO
+────────
+Treinar dois modelos de deep learning (ResNet50V2 + EfficientNetB0) com 
+validacao rigorosa e metricas confiáveis para atingir 60%+ de acuracia.
+
+ARQUITETURA DE VALIDACAO (K-FOLD ESTRATIFICADO)
+────────────────────────────────────────────────
+
+[OK] Validacao: 5-Fold Estratificado
+[OK] Separacao: 80% train / 20% val por fold
+[OK] Estrategia: Mantem distribuicao de classes em cada fold
+[OK] Random Seed: 42 (para reproducibilidade)
+
+PLANO DE TREINAMENTO
+────────────────────
+
+FASE 1: RESNET50V2 COM FINE-TUNING
+────────────────────────────────────
+
+Arquitetura:
+  ├─ Base: ResNet50V2 (ImageNet pre-training)
+  ├─ Input: 224×224×3 RGB
+  ├─ Top: GlobalAveragePooling2D → Dense(256) → Dropout(0.5) → Dense(7)
+  └─ Parametros: ~25.6M
+
+Fase 1 - Warmup (15 epochs):
+  ├─ Base Model: Frozen
+  ├─ Treina: Apenas top classifier
+  ├─ Learning Rate: 1e-3
+  ├─ Otimizador: Adam
+  ├─ Loss: Categorical Crossentropy
+  ├─ Class Weights: Balanced (automatico)
+  └─ Early Stopping: Paciencia=5 (monitora val_loss)
+
+Fase 2 - Fine-tuning (30 epochs):
+  ├─ Base Model: Descongela ultimas 30 camadas
+  ├─ Treina: Toda a rede
+  ├─ Learning Rate: 1e-5 (MUITO pequeno)
+  ├─ ReduceLROnPlateau: Factor=0.5, Paciencia=3
+  ├─ Early Stopping: Paciencia=7
+  └─ Checkpoint: Salva melhor modelo
+
+FASE 2: EFFICIENTNETB0 (OTIMIZADO)
+────────────────────────────────────
+
+Arquitetura:
+  ├─ Base: EfficientNetB0 (ImageNet pre-training)
+  ├─ Input: 224×224×3 RGB
+  ├─ Top: GlobalAveragePooling2D → Dense(128) → Dropout(0.3) → Dense(7)
+  └─ Parametros: ~5.3M (mais leve)
+
+Mesma estrategia de 2 fases, mas:
+  ├─ Descongela: Ultimas 20 camadas (ao invés de 30)
+  ├─ Dropout: 0.3 (ao invés de 0.5)
+  └─ Tempo: ~30% mais rápido que ResNet50V2
+
+TECNICAS DE REGULARIZACAO
+──────────────────────────
+
+Data Augmentation (agressivo):
+  [OK] Rotation: +/-20°
+  [OK] Width/Height Shift: +/-20%
+  [OK] Zoom: 80-120%
+  [OK] Shear: +/-20%
+  [OK] Brightness: 80-120%
+  [OK] Horizontal Flip: Yes
+
+Class Balancing:
+  [OK] class_weight='balanced' em fit()
+  [OK] Automatico baseado em frequência de classe
+  [OK] Disgust (436 imagens) recebera peso ~26x
+  [OK] Happy (7215 imagens) recebera peso ~1.6x
+
+Learning Rate Schedule:
+  [OK] ReduceLROnPlateau monitora val_loss
+  [OK] Reduz por fator 0.5 quando plateau eh atingido
+  [OK] Min learning rate: 1e-7 (protecao contra zero)
+
+METRICAS DE AVALIACAO
+─────────────────────
+
+Fase de Validacao (por epoch):
+  * Loss (categorical crossentropy)
+  * Accuracy global
+  * Val Loss (monitorado para early stopping)
+  * Val Accuracy
+
+Fase de Teste (ao final):
+  [OK] Acuracia global
+  [OK] Precision por classe
+  [OK] Recall por classe
+  [OK] F1-score por classe
+  [OK] Matriz de Confusao (normalizada)
+  [OK] Curva ROC-AUC (se aplicável)
+
+Artefatos Salvos:
+  ├─ models/resnet50v2_fase1.keras (checkpoint)
+  ├─ models/resnet50v2_fase2.keras (melhor modelo)
+  ├─ models/efficientnetb0_fase1.keras
+  ├─ models/efficientnetb0_fase2.keras
+  ├─ reports/metrics_resnet50v2.csv (classification report)
+  ├─ reports/metrics_efficientnetb0.csv
+  ├─ reports/figures/cm_resnet50v2.png (confusion matrix)
+  ├─ reports/figures/cm_efficientnetb0.png
+  ├─ reports/historico_resnet50v2.csv (training history)
+  └─ reports/historico_efficientnetb0.csv
+
+CRONOGRAMA E TEMPO ESTIMADO
+────────────────────────────
+
+Com GPU NVIDIA (recomendado):
+  ├─ ResNet50V2 Setup: ~5 min
+  ├─ ResNet50V2 Training (2 phases): ~2.5 horas
+  ├─ ResNet50V2 Evaluation: ~10 min
+  ├─ EfficientNetB0 Setup: ~5 min
+  ├─ EfficientNetB0 Training: ~1.5 horas
+  ├─ EfficientNetB0 Evaluation: ~10 min
+  └─ TOTAL: ~4.5 horas
+
+Sem GPU (CPU apenas):
+  └─ TOTAL: ~20-30 horas (nao recomendado)
+
+PLANO DE ANALISE POS-TREINAMENTO
+─────────────────────────────────
+
+1. Comparativa de Resultados:
+   ├─ Qual modelo tem melhor acuracia geral?
+   ├─ Qual tem melhor F1-score por classe?
+   ├─ Qual eh mais rápido (FPS)?
+   └─ Ha overfitting? (comparar train vs val)
+
+2. Analise de Erros:
+   ├─ Quais classes são confundidas?
+   ├─ Disgust: conseguimos melhorar sua recall?
+   ├─ Happy: está fazendo overfitting?
+   └─ Classes balanceadas melhoraram com class_weight?
+
+3. Visualizacoes Finais:
+   ├─ Gráficos de loss/accuracy ao longo do treino
+   ├─ Confusion matrices normalizadas
+   ├─ Comparativa de métricas por classe
+   └─ Tudo pronto para monografia
+
+CHECKPOINTS E SALVAMENTOS INTERMEDIARIOS
+──────────────────────────────────────────
+
+Automatico:
+  [OK] ModelCheckpoint: Salva melhor modelo em cada fase
+  [OK] Early Stopping: Evita treinar além do necessário
+  [OK] ReduceLROnPlateau: Ajusta taxa de aprendizado
+
+Manual (você pode interromper):
+  [OK] Se GPU ficar instavel, pode pausar e retomar
+  [OK] Se achar que learning rate está ruim, pode ajustar
+  [OK] Se suspeitar de overfitting, pode parar cedo
+
+POTENCIAIS PROBLEMAS E SOLUCOES
+────────────────────────────────
+
+Problema: GPU fora de memória (OOM)
+  → Solucao: Reduzir batch_size de 64 para 32
+
+Problema: Learning rate muito alto (loss aumenta)
+  → Solucao: Reduzir de 1e-3 para 5e-4
+
+Problema: Modelo não está aprendendo (loss plano)
+  → Solucao: Verificar se class_weights estão sendo aplicadas
+
+Problema: Overfitting extremo (train 90%, val 55%)
+  → Solucao: Aumentar dropout ou augmentation
+
+PROXIMOS PASSOS APOS TREINO
+────────────────────────────
+
+1. Analise Comparativa:
+   └─ Comparar ResNet vs EfficientNet
+   └─ Qual escolher para producao?
+
+2. Otimizacoes Opcionais:
+   └─ Tentar técnicas adicionais (SMOTE, Focal Loss, etc)
+   └─ Testar em outros datasets (RAF-DB)
+
+3. Documentacao:
+   └─ Escrever seção de Resultados para monografia
+   └─ Incluir gráficos e tabelas
+
+4. Apresentacao:
+   └─ Preparar slides com descobertas
+   └─ Praticar apresentação
+
+================================================================================
+INSTRUCOES DE EXECUCAO
+================================================================================
+
+OPCAO 1: Script Python (Recomendado - Automatizado)
+────────────────────────────────────────────────────
+cd /caminho/para/tcc-fer-deeplearning
+./venv/Scripts/python.exe src/train/transfer_learning_fer2013.py
+
+Tempo: ~4.5 horas (com GPU)
+Output: Todos os gráficos, métricas e modelos salvos automaticamente
+
+OPCAO 2: Jupyter Notebook (Interativo - Melhor para aprender)
+────────────────────────────────────────────────────────────
+jupyter notebook notebooks/03_modelagem_cnn/04_transfer_learning_fer2013.ipynb
+
+Tempo: 4.5 horas (com quebras para análise)
+Output: Executa célula por célula, pode visualizar cada etapa
+
+OPCAO 3: Hibrida (Eu recomendo)
+───────────────────────────────
+1. Executar script para treino rápido
+2. Usar notebook para análise e visualização dos resultados
+
+================================================================================
+RECOMENDACOES FINAIS
+================================================================================
+
+[OK] USE GPU: Diferenca de 5-6x no tempo de treinamento
+[OK] MONITORE DURANTE EXECUCAO: Veja loss/accuracy em tempo real
+[OK] SALVE CHECKPOINTS: Em caso de interrupcao, pode retomar
+[OK] DOCUMENTE TUDO: Qualquer alteracao, anote no git
+[OK] COMPARACAO FINAL: Qual modelo eh melhor? Por quê?
+
+================================================================================
+STATUS: PRONTO PARA COMECO PASSO 2
+================================================================================
+
+Você tem:
+  [OK] Dataset validado (EDA completa)
+  [OK] Cross-validation estratificada planejada
+  [OK] Tecnicas de augmentation definidas
+  [OK] Arquiteturas selecionadas (ResNet50V2 + EfficientNetB0)
+  [OK] Metricas de avaliacao claras
+  [OK] Plano de execucao estruturado
+
+Próximo passo: Começar o treinamento!
+
