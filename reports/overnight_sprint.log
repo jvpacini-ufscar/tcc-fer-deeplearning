@@ -1,0 +1,12 @@
+[2026-05-08 21:47:10] === INÍCIO DA SPRINT NOTURNA - TCC FER ===
+[2026-05-08 21:47:10] Iniciando: Treinamento ConvNeXt no AffectNet (src/train/train_convnext_affectnet.py)
+[2026-05-08 21:47:16] Erro: Treinamento ConvNeXt no AffectNet terminou com código 1
+[2026-05-08 21:47:16] Sprint Finalizada. Atualizando status final...
+[2026-05-08 21:47:16] === SPRINT NOTURNA CONCLUÍDA ===
+[2026-05-08 21:47:35] === INÍCIO DA SPRINT NOTURNA - TCC FER ===
+[2026-05-08 21:47:35] Iniciando: Treinamento ConvNeXt no AffectNet (src/train/train_convnext_affectnet.py)
+[2026-05-08 22:35:10] Sucesso: Treinamento ConvNeXt no AffectNet
+[2026-05-08 22:35:10] Iniciando: Avaliação Cross-Dataset (AffectNet -> Others) (src/evaluate/eval_cross_dataset.py)
+[2026-05-08 22:36:16] Sucesso: Avaliação Cross-Dataset (AffectNet -> Others)
+[2026-05-08 22:36:16] Sprint Finalizada. Atualizando status final...
+[2026-05-08 22:36:16] === SPRINT NOTURNA CONCLUÍDA ===

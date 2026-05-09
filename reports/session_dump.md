@@ -1,22 +1,27 @@
 # Session Dump - TCC Facial Expression Recognition
-**Última Atualização:** 2026-05-08 10:15
+**Última Atualização:** 2026-05-08 23:15
 
 ## 1. Estado Atual
-- **Dataset RAF-DB:** Concluída bateria de testes. ConvNeXt Tiny detém o recorde com **86.54%**.
-- **Dataset FER2013:** ConvNeXt Tiny atingiu **65.06%** de acurácia (Novo Recorde para este dataset no projeto).
-- **Dataset AffectNet:** Download concluído. Validada a estrutura em `data/raw/affectnet-kaggle/archive (3)/Train` e `Test`. Está no formato ImageFolder.
+- **Dataset RAF-DB:** Recorde de **86.54%** com ConvNeXt Tiny.
+- **Dataset FER2013:** Recorde de **65.06%** com ConvNeXt Tiny.
+- **Dataset AffectNet (Subset):** Treinado com **70.32%** de acurácia. Usado como backbone para extração de features.
+- **Fase Temporal (CK+):** Primeira pipeline completa concluída. Extração de features via ConvNeXt + Classificação via LSTM.
 
 ## 2. Resultados Recentes
-- **ConvNeXt Tiny no FER2013:** Atingiu **65.06%** de acurácia (Recuperado em 08/05/2026).
-- **ConvNeXt Tiny no RAF-DB:** Atingiu **86.54%**.
+- **LSTM no CK+:** Atingiu **95.45%** de acurácia em sequências temporais.
+- **Cross-Dataset (AffectNet -> Others):** FER2013 (42.84%), RAF-DB (33.70%).
 
 ## 3. Credenciais
-- Kaggle configurado em `~/.kaggle/kaggle.json`.
+- Kaggle configurado e funcional.
 
 ## 4. Próximos Passos Imediatos
-1. [ ] Treinar ConvNeXt Tiny no AffectNet para consolidar o backbone estático.
-2. [ ] Iniciar extração de features para a fase Temporal (LSTM/Attention).
-3. [ ] Avaliação cross-dataset final (Train: AffectNet -> Test: RAF-DB/FER2013).
+1. [ ] Implementar Attention Mechanism na LSTM para melhorar foco em frames-chave.
+2. [ ] Testar a pipeline em um vídeo "in-the-wild" (ex: YouTube ou Webcam).
+3. [ ] Iniciar a redação do capítulo de Metodologia e Resultados.
 
 ## 5. Pendências
-- Organizar ou criar link simbólico para o AffectNet para facilitar o pathing (o caminho atual com 'archive (3)' é ruim).
+- Avaliar se o desbalanceamento do CK+ impactou o F1-Score da LSTM (apesar da alta acurácia).
+
+- **Sprint Noturna (08/05)**: Finalizada com sucesso.
+
+- **Sprint Noturna (08/05)**: Finalizada com sucesso.
