@@ -14,7 +14,7 @@ import seaborn as sns
 from tqdm import tqdm
 
 # Configurações
-BASE_DIR = "."
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(BASE_DIR, "data/raw/raf-db")
 TRAIN_DIR = os.path.join(DATA_DIR, "train")
 VAL_DIR = os.path.join(DATA_DIR, "test")
@@ -57,8 +57,19 @@ class_weights = torch.tensor(weights, dtype=torch.float).to(DEVICE)
 
 # 3. Model Building
 def get_convnext():
-    # Usando convnext_tiny (28M params, comparável a ResNet50 mas muito mais moderno)
-    model = timm.create_model('convnext_tiny', pretrained=True, num_classes=NUM_CLASSES)
+    # Usando convnext_tiny
+    print("[INFO] Carregando pesos pré-treinados do AffectNet...")
+    model = timm.create_model('convnext_tiny', pretrained=False, num_classes=8)
+    affectnet_weights = os.path.join(MODELS_DIR, "convnext_affectnet_best.pth")
+    if os.path.exists(affectnet_weights):
+        model.load_state_dict(torch.load(affectnet_weights, map_location=DEVICE))
+        print("[SUCESSO] Pesos AffectNet carregados.")
+    else:
+        print("[AVISO] Pesos AffectNet não encontrados. Usando ImageNet pré-treinado.")
+        model = timm.create_model('convnext_tiny', pretrained=True, num_classes=8)
+    
+    # Adaptar para 7 classes do RAF-DB
+    model.head.fc = nn.Linear(model.head.fc.in_features, NUM_CLASSES)
     return model.to(DEVICE)
 
 def train_epoch(model, loader, criterion, optimizer, scaler):

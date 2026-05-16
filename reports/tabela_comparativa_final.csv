@@ -1,0 +1,7 @@
+Modelo,FER2013,RAF-DB,CK+ (Peak)
+ConvNeXt (AffectNet),41.06%,30.80%,32.31%
+ConvNeXt (RAF-DB),53.58%,87.16%,34.05%
+ResNet50V2 (FER2013),44.86%,26.96%,25.99%
+EfficientNetB0 (FER2013),57.13%,28.59%,27.52%
+ResNet50V2 (RAF-DB),51.95%,76.43%,35.47%
+EfficientNetB0 (RAF-DB),47.87%,80.93%,29.05%
